@@ -1,0 +1,37 @@
+{
+  "path": "arm64_bridge/ui/MenuAdvanced.as",
+  "before_sha256": "6a92d90b6d7b45f3854dee7f3db5eaf4d3977cab62ceeafd41463a91d9f8ca26",
+  "after_sha256": "c740d39bf265ce702eaeeeb435cd826657eded0a3adfdf0c4191a5519f4a8b30",
+  "edits": [
+    [
+      202,
+      0,
+      "      public function onComboItemSet(param1:ListEvent) : void\n      {\n         param1.item.mc_label.txt_label.text = this._opts[param1.list.id].options[param1.index];\n      }\n\n"
+    ],
+    [
+      195,
+      4,
+      "         if(this._opts[param1.index].options is Array)\n         {\n            param1.item.gotoAndStop(GenericOptionMenu.COMBO);\n            param1.item.combo.id = param1.index;\n            param1.item.combo.optionID = this._opts[param1.index].id;\n            param1.item.combo.addEventListener(ListEvent.ITEM_SET,this.onComboItemSet);\n            param1.item.combo.initValues(this._opts[param1.index].value,this._opts[param1.index].options.length);\n            // AutoSave's constructor listener runs before this refresh listener.\n            param1.item.combo.addEventListener(UIEvent.CHANGE,this.onComboValueChange,false,-1);\n         }\n         else\n         {\n            param1.item.gotoAndStop(GenericOptionMenu.SWITCH);\n            param1.item.myOnOffSwitch.setInitValue(this._opts[param1.index].value);\n            param1.item.myOnOffSwitch.optionID = this._opts[param1.index].id;\n         }\n         param1.item.infos_btn.visible = this._opts[param1.index].id < 200;\n"
+    ],
+    [
+      150,
+      0,
+      "         if(this._graphicsRefreshing || this._graphicsStart < 0 || param1.previousValue == -1)\n         {\n            return;\n         }\n         // Custom is a derived caption, not a fifth selectable preset.\n         if(param1.currentTarget.optionID == \"200\" && param1.value == 4 && param1.previousValue != 4)\n         {\n            param1.currentTarget.displayList(param1.previousValue == 3 ? 0 : 3,true);\n            return;\n         }\n         var state:uint = this.graphicsState();\n         var i:int = 0;\n         while(i < 6)\n         {\n            this._opts[this._graphicsStart + i].value = state >>> (i * 3) & 7;\n            i++;\n         }\n         this._graphicsRefreshing = true;\n         this.options_list.refreshCurrent();\n         this._graphicsRefreshing = false;\n      }\n\n      public static function NativeGraphicsState() : uint\n      {\n         // Unbound native/failed backend leaves the original settings intact.\n         return 0;\n      }\n\n      private function graphicsState() : uint\n      {\n         // Object lookup follows gameswf's registered builtin map by name.\n         var api:Object = MenuAdvanced;\n         return uint(api.NativeGraphicsState());\n      }\n\n      private function appendGraphicsOptions() : void\n      {\n         this._graphicsStart = -1;\n         var state:uint = this.graphicsState();\n         if((state & 524288) == 0 || this._opts.length == 0 || this._opts[0].id != 10)\n         {\n            return;\n         }\n         var original:Array = this._opts;\n         this._opts = [];\n         var i:int = 0;\n         while(i < original.length)\n         {\n            // The resolution combo replaces the legacy ForceRetina switch.\n            if(original[i].id != 33)\n            {\n               this._opts.push(original[i]);\n            }\n            i++;\n         }\n         var russian:Boolean = (state & 262144) != 0;\n         var labels:Array = russian ? [\"Графика: пресет\",\"Разрешение\",\"Материалы\",\"Тени\",\"Отражения\",\"Глубина резкости\"] : [\"Graphics: preset\",\"Resolution\",\"Materials\",\"Shadows\",\"Reflections\",\"Depth of field\"];\n         var automatic:String = russian ? \"Авто\" : \"Auto\";\n         var options:Array = [russian ? [automatic,\"Производит.\",\"Баланс\",\"Высокое\",\"Свой\"] : [automatic,\"Performance\",\"Balanced\",\"High\",\"Custom\"],[automatic,\"50%\",\"75%\",\"100%\"],russian ? [automatic,\"Низкие\",\"Высокие\"] : [automatic,\"Low\",\"High\"]];\n         var switches:Array = russian ? [automatic,\"Выкл.\",\"Вкл.\"] : [automatic,\"Off\",\"On\"];\n         this._graphicsStart = this._opts.length;\n         i = 0;\n         while(i < 6)\n         {\n            this._opts.push({\"id\":200 + i,\"label\":labels[i],\"value\":state >>> (i * 3) & 7,\"options\":i < 3 ? options[i] : switches});\n            i++;\n         }\n         this.mc_title.title_lbl.tf.text = String(this._opts.length) + (russian ? \": листайте\" : \": scroll\");\n         this.customize_btn.name_mc.tf.text = russian ? \"Графика: после перезапуска\" : \"Graphics: restart to apply\";\n         this.customize_btn.mouseEnabled = false;\n         this.customize_btn.mouseChildren = false;\n"
+    ],
+    [
+      60,
+      1,
+      "         this[\"customize_btn\"].visible = this._graphicsStart >= 0;\n"
+    ],
+    [
+      58,
+      0,
+      "         this.appendGraphicsOptions();\n"
+    ],
+    [
+      42,
+      0,
+      "\n      private var _graphicsStart:int = -1;\n\n      private var _graphicsRefreshing:Boolean = false;\n"
+    ]
+  ]
+}
